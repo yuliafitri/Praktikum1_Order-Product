@@ -1,73 +1,37 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
-  $name = htmlspecialchars($_POST['name']);
-  $address = htmlspecialchars($_POST['address']);
-  $phone = htmlspecialchars($_POST['phone']);
-  $email = htmlspecialchars($_POST['email']);
-  $instructions = htmlspecialchars($_POST['delivery-instructions']);
-  $crust = htmlspecialchars($_POST['pizza-crust']);
-  $toppings = isset($_POST['toppings']) ? $_POST['toppings'] : [];
-  $quantity = htmlspecialchars($_POST['quantity']);
-?>
-  <!DOCTYPE html>
-  <html>
-
-  <head>
-    <title>Pemesanan Pizza Telah Berhasil </title>
-    <link rel="stylesheet" href="assets/css/output.css">
-    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/3176/3176382.png" type="image/x-icon">
-  </head>
-
-  <body>
-    <fieldset class="fieldset-style">
-      <h1 class="text-center">THANK YOU</h1>
-      <hr class="border-style border-lightblue" />
-      <p>Thank you for ordering from Blak Goose Bistro. We have received the
-        <br> following information about your order:
-      </p>
-      <p class="text-orange">
-        <b>Your Information</b>
-      </p>
-      <ul type="none">
-        <li>
-          <p>
-            <b>Name:</b> <?= $name ?>
-            <br>
-            <b>Address:</b> <?= $address ?>
-            <br>
-            <b>Telephone number:</b> <?= $phone ?>
-            <br>
-            <b>Email Address:</b> <?= $email ?>
-          </p>
-        </li>
-      </ul>
-      <p>
-        <b>Delivery instructions:</b> <?= $instructions ?>
-      </p>
-      <p class="text-orange">
-        <b>Your pizza</b>
-      </p>
-      <ul type="none">
-        <li>
-          <p>
-            <b>Crust:</b> <?= $crust ?>
-            <br>
-            <b>Toppings:</b>
-            <?= implode(", ", $toppings) ?>
-            <br>
-            <b>Number:</b> <?= $quantity ?>
-          </p>
-        </li>
-      </ul>
-      <hr class="border-style border-lightsalmon" />
-      <p> This site is for educational purposes only. No pizzas will be delivered</p>
-    </fieldset>
-  </body>
-
-  </html>
-<?php
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Ambil data dari form
+    $nama = htmlspecialchars($_POST['nama']);
+    $email = htmlspecialchars($_POST['email']);
+    $barang = htmlspecialchars($_POST['barang']);
+    $jumlah = intval($_POST['jumlah']);
+    $alamat = htmlspecialchars($_POST['alamat']);
+    
+    // Hitung total harga sederhana (contoh harga)
+    $harga = 0;
+    if ($barang == 'Laptop') $harga = 10000000;
+    elseif ($barang == 'Smartphone') $harga = 5000000;
+    elseif ($barang == 'Tablet') $harga = 3000000;
+    $total = $harga * $jumlah;
+    
+    // Simpan data ke file teks (sebagai log sederhana)
+    $data = "Pemesanan Baru - " . date('Y-m-d H:i:s') . "\n";
+    $data .= "Nama: $nama\n";
+    $data .= "Email: $email\n";
+    $data .= "Barang: $barang\n";
+    $data .= "Jumlah: $jumlah\n";
+    $data .= "Total Harga: Rp " . number_format($total) . "\n";
+    $data .= "Alamat: $alamat\n";
+    $data .= "----------------------------------------\n";
+    
+    file_put_contents('pesanan.txt', $data, FILE_APPEND | LOCK_EX);
+    
+    // Redirect kembali ke index dengan pesan sukses
+    header('Location: index.php?status=success');
+    exit();
 } else {
-  echo "<script>alert('Please fill out the form first.');</script>";
-  exit();
+    // Jika akses langsung, redirect ke index
+    header('Location: index.php');
+    exit();
 }
 ?>
